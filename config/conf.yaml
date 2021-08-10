@@ -1,0 +1,9 @@
+db:
+  drivername: postgres
+  user: postgres
+  password: 12345678
+  dbname: urlsshortener
+  sslmode: disable
+server:
+  network: tcp
+  address: ":8080"
