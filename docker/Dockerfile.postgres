@@ -1,6 +1,6 @@
 FROM postgres:12.0-alpine
 
-COPY ./migration/  /docker-entrypoint-initdb.d/
+COPY /migration/init.sql  /docker-entrypoint-initdb.d/init.sql
 
 EXPOSE 5432
 
