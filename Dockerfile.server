@@ -1,29 +1,43 @@
 # Dockerfile References: https://docs.docker.com/engine/reference/builder/
 
 # Start from golang:1.12-alpine base image
-FROM golang:1.12-alpine
+FROM golang:1.14-alpine
 
 RUN go version
 
+ENV GOPATH=/
+
 ## The latest alpine images don't have some tools like (`git` and `bash`).
 ## Adding git, bash and openssh to the image
-#RUN apk update && apk upgrade && \
-#    apk add --no-cache bash git openssh
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
 
 # Add Maintainer Info
 LABEL maintainer="Denshchikov Roman <roman.denshikov@yandex.ru>"
 
-## Set the Current Working Directory inside the container
-#WORKDIR /app
+WORKDIR /app
 
-COPY ./ ./
+COPY . .
+
+## Set the Current Working Directory inside the container
+
+
+
+
+RUN apk add postgresql-client
+
+#RUN apt-get -y install postgresql-client
+
+# make wait-for-postgres.sh executable
+#RUN chmod +x ./wait-for-postgres.sh
+
 
 # Download all dependancies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
-# Expose port 8080 to the outside world
-#EXPOSE 8080
+RUN go build -o  main ./cmd/server/main.go
 
-RUN go build -o main ./cmd/server/serverStarter.go
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
 CMD ["./main"]

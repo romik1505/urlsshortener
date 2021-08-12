@@ -1,28 +1,27 @@
-version: '3'
+version: '3.3'
 services:
   postgres:
-    image: postgres:12
-    build:
-      context: ./docker/
-      dockerfile: Dockerfile.postgres
+    image: postgres:12.0-alpine
     restart: always
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=12345678
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=urlshortener
     volumes:
-      - ./migration:/var/lib/postgresql/data
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=urlshortener
 
-#  server:
-#    build:
-#      context: ./docker/
-#      dockerfile: Dockerfile.server
-#    restart: always
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      POSTGRESQL_HOST: postgres
-#    links:
-#      - postgres
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    #command: ./wait-for-postgres.sh db ./main
+    #restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRESQL_HOST=postgres
+      - POSTGRES_PASSWORD=12345678
+    links:
+      - postgres

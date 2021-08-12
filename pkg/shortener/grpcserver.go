@@ -1,11 +1,11 @@
 package apishortener
 
 import (
-	"UrlShortener/pkg/api"
 	"context"
 	"database/sql"
 	"log"
 	"math/rand"
+	"urlsshortener/pkg/api"
 )
 
 type GRPCServer struct {
@@ -29,7 +29,7 @@ func (g *GRPCServer) Create(ctx context.Context, in *api.Message) (*api.Message,
 	err := g.Db.QueryRow("SELECT shortener FROM urls WHERE original=$1", originalUrl).Scan(&shortenerUrl)
 
 	if err != nil { // Ссылка не найдена
-		for i := 0; i < 3; i++{	// Решение случайной коллизии
+		for i := 0; i < 3; i++ { // Решение случайной коллизии
 			shortenerUrl = randomString(10)
 			result, err := g.Db.Exec("INSERT INTO urls (original, shortener) VALUES ($1, $2)", originalUrl, shortenerUrl)
 			if err != nil { // Рандомная строка уже присутствует в бд
@@ -41,7 +41,7 @@ func (g *GRPCServer) Create(ctx context.Context, in *api.Message) (*api.Message,
 				return &api.Message{Url: shortenerUrl}, nil
 			}
 		}
-		return  &api.Message{Url: ""}, err
+		return &api.Message{Url: ""}, err
 	}
 	log.Println("Already exist: " + originalUrl + "->" + shortenerUrl)
 	return &api.Message{Url: shortenerUrl}, nil

@@ -1,9 +1,6 @@
 package main
 
 import (
-	"UrlShortener/cmd/config"
-	"UrlShortener/pkg/api"
-	us "UrlShortener/pkg/shortener"
 	"database/sql"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
@@ -11,31 +8,36 @@ import (
 	"math/rand"
 	"net"
 	"time"
+	"urlsshortener/cmd/config"
+	"urlsshortener/pkg/api"
+	us "urlsshortener/pkg/shortener"
 )
 
-func init()  {
+func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 func main() {
-	conf, err := config.LoadConfig("config/")
-	if err != nil {
-		log.Fatal(err)
-	}
+	conf := config.GetConfig()
 
 	connStr := conf.GetDbConnectionString()
-	db, err := sql.Open(conf.Db.Drivername, connStr)
+	db, err := sql.Open(conf.DbDrivername, connStr)
 	defer db.Close()
 
 	if err != nil {
-		log.Panic(err)
+		log.Fatalln(err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatalln("Bad connection " + connStr)
 	}
 
 	s := grpc.NewServer()
 	srv := &us.GRPCServer{Db: db}
 	api.RegisterShortenerServer(s, srv)
 
-	lis, err := net.Listen(conf.Server.Network, conf.Server.Address)
+	lis, err := net.Listen(conf.Network, conf.Address)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,20 +1,17 @@
 package main
 
 import (
-	"UrlShortener/cmd/config"
-	"UrlShortener/pkg/api"
 	"context"
 	"google.golang.org/grpc"
 	"testing"
+	"urlsshortener/cmd/config"
+	"urlsshortener/pkg/api"
 )
 
-func TestGRPC(t *testing.T)  {
-	conf, err := config.LoadConfig("../../config/")
-	if err != nil {
-		t.Errorf("Error load configuration: %s\n", err)
-	}
+func TestGRPC(t *testing.T) {
+	conf := config.GetConfig()
 
-	conn, err := grpc.Dial(conf.Server.Address, grpc.WithInsecure())
+	conn, err := grpc.Dial(conf.Address, grpc.WithInsecure())
 	if err != nil {
 		t.Errorf("Bad connection: %s\n", err)
 	}
@@ -23,10 +20,10 @@ func TestGRPC(t *testing.T)  {
 	originalsUrl := []string{"ABOBA", "AMOGUS", "ABIBUS", "NEW"}
 	shortenerUrl := []string{}
 
-	for _, url := range originalsUrl{
+	for _, url := range originalsUrl {
 		mess, err := cl.Create(context.Background(), &api.Message{Url: url})
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 		shortenerUrl = append(shortenerUrl, mess.GetUrl())
 	}
@@ -40,6 +37,5 @@ func TestGRPC(t *testing.T)  {
 			t.Error("Error bad url relation")
 		}
 	}
-
 
 }

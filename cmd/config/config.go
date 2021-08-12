@@ -3,39 +3,44 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"log"
 )
 
 type Config struct {
-	Db struct{
-		Drivername string
-		User string
-		Password string
-		Dbname string
-		Sslmode string
-	}
-	Server struct{
-		Network string
-		Address string
-	}
+	DbDrivername string
+	Username     string
+	Password     string
+	Dbname       string
+	Sslmode      string
+	Network      string
+	Address      string
 }
 
-func LoadConfig(path string) (config Config, err error) {
-	viper.AddConfigPath(path)
-	viper.AddConfigPath(".")
-	viper.SetConfigName("conf")
+func initConfig() error {
+	viper.AddConfigPath("../../configs")
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
+	return viper.ReadInConfig()
+}
+
+func GetConfig() *Config {
+	if err := initConfig(); err != nil {
+		log.Fatal(err)
 	}
-
-	err = viper.Unmarshal(&config)
-	return
+	return &Config{
+		DbDrivername: viper.GetString("db.drivername"),
+		Username:     viper.GetString("db.username"),
+		Password:     viper.GetString("db.password"),
+		Dbname:       viper.GetString("db.dbname"),
+		Sslmode:      viper.GetString("db.sslmode"),
+		Network:      viper.GetString("server.network"),
+		Address:      viper.GetString("server.address"),
+	}
 }
 
 func (conf Config) GetDbConnectionString() string {
 	return fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
-		conf.Db.User, conf.Db.Password, conf.Db.Dbname, conf.Db.Sslmode)
+		conf.Username, conf.Password, conf.Dbname, conf.Sslmode)
 }
