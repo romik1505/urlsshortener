@@ -17,7 +17,7 @@ func TestGRPC(t *testing.T) {
 	}
 	cl := api.NewShortenerClient(conn)
 
-	originalsUrl := []string{"ABOBA", "AMOGUS", "ABIBUS", "NEW"}
+	originalsUrl := []string{"www.yandex.ru", "www.google.com", "www.ozon.ru", "www.github.com"}
 	shortenerUrl := []string{}
 
 	for _, url := range originalsUrl {
