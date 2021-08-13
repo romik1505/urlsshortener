@@ -1,6 +1,20 @@
 version: '3.3'
 services:
-  postgres:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    command: ./wait-for-postgres.sh db ./main
+    #restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_HOST=db
+
+  db:
     image: postgres:12.0-alpine
     restart: always
     ports:
@@ -11,17 +25,3 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12345678
       - POSTGRES_DB=urlshortener
-
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    #command: ./wait-for-postgres.sh db ./main
-    #restart: always
-    ports:
-      - "8080:8080"
-    environment:
-      - POSTGRESQL_HOST=postgres
-      - POSTGRES_PASSWORD=12345678
-    links:
-      - postgres

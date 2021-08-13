@@ -1,7 +1,7 @@
 package main
 
 import (
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 	"log"
@@ -21,7 +21,8 @@ func main() {
 	conf := config.GetConfig()
 
 	connStr := conf.GetDbConnectionString()
-	db, err := sql.Open(conf.DbDrivername, connStr)
+
+	db, err := sqlx.Open(conf.DbDrivername, connStr)
 	defer db.Close()
 
 	if err != nil {

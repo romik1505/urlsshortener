@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
+	"os"
 )
 
 type Config struct {
 	DbDrivername string
+	Host         string
+	Port         string
 	Username     string
 	Password     string
 	Dbname       string
@@ -31,6 +34,8 @@ func GetConfig() *Config {
 	}
 	return &Config{
 		DbDrivername: viper.GetString("db.drivername"),
+		Host:         os.Getenv("POSTGRES_HOST"),
+		Port:         viper.GetString("db.port"),
 		Username:     viper.GetString("db.username"),
 		Password:     viper.GetString("db.password"),
 		Dbname:       viper.GetString("db.dbname"),
@@ -41,6 +46,6 @@ func GetConfig() *Config {
 }
 
 func (conf Config) GetDbConnectionString() string {
-	return fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
-		conf.Username, conf.Password, conf.Dbname, conf.Sslmode)
+	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		conf.Host, conf.Port, conf.Username, conf.Dbname, conf.Password, conf.Sslmode)
 }

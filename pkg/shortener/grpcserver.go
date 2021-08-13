@@ -2,7 +2,7 @@ package apishortener
 
 import (
 	"context"
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"math/rand"
 	"urlsshortener/pkg/api"
@@ -10,7 +10,7 @@ import (
 
 type GRPCServer struct {
 	api.UnimplementedShortenerServer
-	Db *sql.DB
+	Db *sqlx.DB
 }
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
