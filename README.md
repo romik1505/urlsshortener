@@ -11,3 +11,36 @@
 Сервис должен быть написан на Go и принимать следующие запросы по gRPC:
 1. Метод **Create**, который будет сохранять оригинальный URL в базе и возвращать сокращённый
 2. Метод **Get**, который будет принимать сокращённый URL и возвращать оригинальный URL
+
+**Структура проекта:**
+```
+.
+├── api
+│   └── proto
+│       └── shortener.proto
+├── cmd
+│   ├── client
+│   │   └── client_test.go
+│   ├── config
+│   │   └── config.go
+│   └── server
+│       └── main.go
+├── configs
+│   └── config.yaml
+├── docker-compose.yaml
+├── Dockerfile.server
+├── go.mod
+├── go.sum
+├── Makefile
+├── pkg
+│   ├── api
+│   │   ├── shortener_grpc.pb.go
+│   │   └── shortener.pb.go
+│   └── shortener
+│       └── grpcserver.go
+├── schema
+│   ├── 000001_init.down.sql
+│   └── 000001_init.up.sql
+└── wait-for-postgres.sh
+```
+
